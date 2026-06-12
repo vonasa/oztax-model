@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Australian CGT — Old vs New Tax Comparison</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <main class="page">
+    <header class="page-header">
+      <h1>Capital Gains Tax: Old vs New</h1>
+      <p class="subtitle">
+        Compare tax paid and real (after-tax, inflation-adjusted) returns on shares under
+        Australia&rsquo;s existing 50% discount regime versus a proposed indexed-cost-base regime
+        with a 30% minimum rate.
+      </p>
+    </header>
+
+    <form id="calc-form" novalidate>
+      <!-- Global assumptions -->
+      <section class="card">
+        <h2>Assumptions</h2>
+        <div class="grid grid-3">
+          <div class="field">
+            <label for="years">Years held</label>
+            <input type="number" id="years" name="years" min="1" step="1" value="10" inputmode="numeric" />
+          </div>
+          <div class="field">
+            <label for="inflation">Avg. annual inflation (%)</label>
+            <input type="number" id="inflation" name="inflation" step="0.1" value="3" inputmode="decimal" />
+          </div>
+          <div class="field">
+            <label for="marginal">Marginal tax rate</label>
+            <select id="marginal" name="marginal">
+              <option value="0">0% — tax-free ($0–$18,200)</option>
+              <option value="18">18% — $18,201–$45,000 (incl. levy)</option>
+              <option value="32" selected>32% — $45,001–$135,000 (incl. levy)</option>
+              <option value="39">39% — $135,001–$190,000 (incl. levy)</option>
+              <option value="47">47% — $190,001+ (incl. levy)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- Shares -->
+      <section class="card">
+        <div class="card-head">
+          <h2>Shares</h2>
+          <button type="button" id="add-share" class="btn btn-ghost">+ Add share</button>
+        </div>
+
+        <div class="shares-head" aria-hidden="true">
+          <span>Name</span>
+          <span>Amount invested ($)</span>
+          <span>Return basis</span>
+          <span>Return (%)</span>
+          <span></span>
+        </div>
+
+        <div id="shares" class="shares"></div>
+      </section>
+
+      <div class="actions">
+        <button type="submit" id="calculate" class="btn btn-primary">Calculate</button>
+        <p id="form-error" class="form-error" role="alert" hidden></p>
+      </div>
+    </form>
+
+    <!-- Results -->
+    <section id="results" class="card results" hidden>
+      <h2>Comparison</h2>
+
+      <div class="context-line" id="context-line"></div>
+
+      <table class="result-table">
+        <thead>
+          <tr>
+            <td class="corner"></td>
+            <th scope="col">
+              <span class="col-title">Existing tax</span>
+              <span class="col-note">50% discount on net nominal gain</span>
+            </th>
+            <th scope="col">
+              <span class="col-title">New tax</span>
+              <span class="col-note">Indexed cost base, min 30% rate</span>
+            </th>
+            <th scope="col" class="delta-head">&Delta; (new &minus; old)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">Tax paid</th>
+            <td id="old-tax"></td>
+            <td id="new-tax"></td>
+            <td class="delta" id="delta-tax"></td>
+          </tr>
+          <tr>
+            <th scope="row">Effective tax on nominal gain</th>
+            <td id="old-eff-tax"></td>
+            <td id="new-eff-tax"></td>
+            <td class="delta" id="delta-eff-tax"></td>
+          </tr>
+          <tr>
+            <th scope="row">After-tax real wealth</th>
+            <td id="old-wealth"></td>
+            <td id="new-wealth"></td>
+            <td class="delta" id="delta-wealth"></td>
+          </tr>
+          <tr>
+            <th scope="row">Real return (total)</th>
+            <td id="old-ret-total"></td>
+            <td id="new-ret-total"></td>
+            <td class="delta" id="delta-ret-total"></td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="disclaimer">
+        Illustrative model only — not financial or tax advice. Both regimes assume holdings &gt; 12 months
+        and a single disposal at the end of the period. Marginal rates reflect 2025&ndash;26 resident
+        brackets including the 2% Medicare levy.
+      </p>
+    </section>
+  </main>
+
+  <!-- Template for a single share row -->
+  <template id="share-row-template">
+    <div class="share-row">
+      <input type="text" class="s-name" placeholder="e.g. CBA" aria-label="Share name" />
+      <input type="number" class="s-amount" placeholder="10000" min="0" step="any" inputmode="decimal" aria-label="Amount invested" />
+      <div class="seg" role="group" aria-label="Return basis">
+        <button type="button" class="seg-btn is-active" data-mode="annual">Annual</button>
+        <button type="button" class="seg-btn" data-mode="overall">Overall</button>
+      </div>
+      <input type="number" class="s-return" placeholder="8" step="any" inputmode="decimal" aria-label="Return percent" />
+      <button type="button" class="btn-remove" aria-label="Remove share">&times;</button>
+    </div>
+  </template>
+
+  <script src="calc.js?v=2"></script>
+  <script src="app.js?v=6"></script>
+</body>
+</html>
